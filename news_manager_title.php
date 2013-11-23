@@ -5,7 +5,7 @@ $thisfile = basename(__FILE__, ".php");
 register_plugin(
 	$thisfile,
 	'News Manager Title',
-	'0.1',
+	'0.2',
 	'Carlos Navarro',
 	'http://www.cyberiada.org/cnb/',
 	'Replace/update GS page title with News Manager post title'
@@ -28,18 +28,21 @@ add_action('index-pretemplate','nmt_set_gstitle');
 add_action('theme-header','nmt_restore_gstitle');
 
 function nmt_return_title() {
-	global $id;
-	global $NMPAGEURL;
-	$nmtitle = false;
-	if (isset($_GET['post']) && $id == $NMPAGEURL) {
-		$file = NMPOSTPATH . $_GET['post'] . '.xml';
-		if (dirname(realpath($file)) == realpath(NMPOSTPATH)) { // no path traversal
-			$post = @getXML($file);
-			if (!empty($post) && $post->private != 'Y') {
-				$nmtitle = stripslashes($post->title);
-			}	
-		}
-	}
+  if (function_exists('nm_post_title')) {
+    $nmtitle = nm_post_title('','',false);
+  } else {
+    global $id, $NMPAGEURL;
+    $nmtitle = false;
+    if (isset($_GET['post']) && $id == $NMPAGEURL) {
+      $file = NMPOSTPATH . $_GET['post'] . '.xml';
+      if (dirname(realpath($file)) == realpath(NMPOSTPATH)) { // no path traversal
+        $post = @getXML($file);
+        if (!empty($post) && $post->private != 'Y') {
+          $nmtitle = stripslashes($post->title);
+        }	
+      }
+    }
+  }
 	return $nmtitle;
 }
 
